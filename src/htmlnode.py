@@ -17,10 +17,25 @@ class HTMLNode():
         return result
     def __repr__(self):
 
-        return f"HTMLNode tag:{self.tag}, value:{self.value}, children:{self.children}, props:{self.props.html()}"
+        return f"HTMLNode tag:{self.tag}, value:{self.value}, children:{self.children}, props:{self.props_to_html()}"
 """
 An HTMLNode without a tag will just render as raw text
 An HTMLNode without a value will be assumed to have children
 An HTMLNode without children will be assumed to have a value
 An HTMLNode without props simply won't have any attributes
 """
+
+class LeafNode(HTMLNode):
+    def __init__(self, tag, value, props=None):
+        super().__init__(tag=tag, value=value, children=None, props=props)
+        
+    
+    def to_html(self):
+        if self.value is None:
+            raise ValueError
+        if not self.tag:
+            return f"{self.value}"
+        return f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
+
+    def __repr__(self):
+        return f"LeafNode tag:{self.tag}, value:{self.value}, props:{self.props_to_html()}"
