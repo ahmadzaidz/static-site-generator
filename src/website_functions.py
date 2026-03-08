@@ -7,17 +7,20 @@ def prepare_and_copy(source_dir, dest_dir):
         raise Exception(f'Error: Directory dont exist')
     if not os.path.isdir(source_dir_abs):
         raise Exception("Error: not directory")
-    shutil.rmtree(dest_dir_abs)
+    if os.path.exists(dest_dir_abs):
+        shutil.rmtree(dest_dir_abs)
     os.mkdir(dest_dir_abs)
-    copy_source_to_dest(source_dir, dest_dir)
+    return copy_source_to_dest(source_dir, dest_dir)
 
 def copy_source_to_dest(source_dir, dest_dir):
     source_dir_abs = os.path.abspath(source_dir)
     dest_dir_abs = os.path.abspath(dest_dir)
+    print(f"copying from {source_dir_abs} to {dest_dir_abs}")
     list_dir = os.listdir(source_dir_abs)
     for item in list_dir:
         dest_path = os.path.join(dest_dir_abs, item)
         src_path = os.path.join(source_dir_abs, item)
+        print(f" * {src_path} -> {dest_path}", flush=True)
         if os.path.isfile(src_path):
             shutil.copy(src_path, dest_path)
         if os.path.isdir(src_path):
