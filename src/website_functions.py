@@ -1,4 +1,32 @@
 import os, shutil
+from block_functions import markdown_to_html_node
+from htmlnode import HTMLNode
+
+def generate_page(from_path, template_path, dest_path):
+    print (f"Generating page from {from_path} to {dest_path} using {template_path}")
+    with open(from_path, "r") as f:
+        src = f.read()
+    with open(template_path) as f:
+        tem = f.read()
+    content = markdown_to_html_node(src)
+    content = content.to_html()
+    title = extract_title(src)
+    tem = tem.replace("{{ Title }}", title)
+    tem = tem.replace("{{ Content }}", content)
+    if os.path.dirname(dest_path) != "": 
+        os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+    with open(dest_path, "w") as f:
+        f.write(tem)
+    
+
+def extract_title(markdown):
+    lines = markdown.splitlines()
+    for line in lines:
+        if line.startswith("# "):
+            title = line.lstrip("#").strip()
+            return title
+    raise Exception("No title found")
+
 
 def prepare_and_copy(source_dir, dest_dir):
     source_dir_abs = os.path.abspath(source_dir)
