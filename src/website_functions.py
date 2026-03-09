@@ -2,6 +2,19 @@ import os, shutil
 from block_functions import markdown_to_html_node
 from htmlnode import HTMLNode
 
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    all_content = os.listdir(dir_path_content)
+    
+    for content in all_content:
+        from_path = os.path.join(dir_path_content, content)
+        to_path = os.path.join(dest_dir_path, content)
+        if os.path.isfile(from_path) and from_path[-3:] == ".md":
+            generate_page(from_path, template_path, f"{to_path[:-3]}.html")
+        elif os.path.isdir(from_path):
+            os.makedirs(to_path, exist_ok=True)
+            generate_pages_recursive(from_path, template_path, to_path)
+
+
 def generate_page(from_path, template_path, dest_path):
     print (f"Generating page from {from_path} to {dest_path} using {template_path}")
     with open(from_path, "r") as f:
