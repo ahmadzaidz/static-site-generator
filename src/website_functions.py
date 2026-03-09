@@ -2,7 +2,7 @@ import os, shutil
 from block_functions import markdown_to_html_node
 from htmlnode import HTMLNode
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath):
     all_content = os.listdir(dir_path_content)
     
     for content in all_content:
@@ -12,10 +12,10 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
             generate_page(from_path, template_path, f"{to_path[:-3]}.html")
         elif os.path.isdir(from_path):
             os.makedirs(to_path, exist_ok=True)
-            generate_pages_recursive(from_path, template_path, to_path)
+            generate_pages_recursive(from_path, template_path, to_path, basepath)
 
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath="/"):
     print (f"Generating page from {from_path} to {dest_path} using {template_path}")
     with open(from_path, "r") as f:
         src = f.read()
@@ -26,6 +26,8 @@ def generate_page(from_path, template_path, dest_path):
     title = extract_title(src)
     tem = tem.replace("{{ Title }}", title)
     tem = tem.replace("{{ Content }}", content)
+    tem = tem.replace(f'href="/', f'href="{basepath}')
+    tem = tem.replace(f'src="/"', f'src="{basepath}')
     if os.path.dirname(dest_path) != "": 
         os.makedirs(os.path.dirname(dest_path), exist_ok=True)
     with open(dest_path, "w") as f:
